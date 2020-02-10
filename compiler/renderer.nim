@@ -1605,4 +1605,4 @@ proc genFieldError*(field: PSym, disc: PSym): string =
   ## import ast
   result = field.name.s.quoteExpr & " is not accessible using discriminant " &
     disc.name.s.quoteExpr & " of type " &
-    disc.owner.name.s.quoteExpr
+    $disc.owner.ast.kind

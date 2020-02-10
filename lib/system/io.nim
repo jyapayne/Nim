@@ -244,20 +244,15 @@ proc write*(f: File, s: string) {.tags: [WriteIOEffect], benign.} =
       raiseEIO("cannot write string to file")
 {.pop.}
 
-when NoFakeVars:
-  when defined(windows):
-    const
-      IOFBF = cint(0)
-      IONBF = cint(4)
-  else:
-    # On all systems I could find, including Linux, Mac OS X, and the BSDs
-    const
-      IOFBF = cint(0)
-      IONBF = cint(2)
+when defined(windows):
+  const
+    IOFBF = cint(0)
+    IONBF = cint(4)
 else:
-  var
-    IOFBF {.importc: "_IOFBF", nodecl.}: cint
-    IONBF {.importc: "_IONBF", nodecl.}: cint
+  # On all systems I could find, including Linux, Mac OS X, and the BSDs
+  const
+    IOFBF = cint(0)
+    IONBF = cint(2)
 
 const
   BufSize = 4000
@@ -507,7 +502,7 @@ const
     # should not be translated.
 
 when defined(posix) and not defined(nimscript):
-  when defined(linux) and defined(amd64):
+  when (defined(linux) or defined(macosx)) and defined(amd64):
     type
       Mode {.importc: "mode_t", header: "<sys/types.h>".} = cint
 

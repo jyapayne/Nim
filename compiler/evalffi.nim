@@ -95,6 +95,21 @@ proc mapType(conf: ConfigRef, t: ast.PType): ptr libffi.Type =
     result = addr libffi.type_pointer
   of tyDistinct, tyAlias, tySink:
     result = mapType(conf, t[0])
+  of tyObject:
+    var els = newSeq[ptr libffi.Type](t.n.sons.len + 1)
+    var ty: ptr libffi.Type = cast[ptr libffi.Type](alloc(sizeof(libffi.Type)))
+
+    ty.size = 0
+    ty.alignment = 0
+    ty.typ = tkSTRUCT
+    ty.elements = addr els[0]
+
+    els[els.len-1] = nil
+    for i in 0..<t.n.sons.len:
+      let son = t.n.sons[i]
+      els[i] = mapType(conf, son.typ)
+
+    result = ty
   else:
     result = nil
   # too risky:
@@ -115,6 +130,7 @@ template `+!`(x, y: untyped): untyped =
 
 proc packSize(conf: ConfigRef, v: PNode, typ: PType): int =
   ## computes the size of the blob
+  echo typ.kind
   case typ.kind
   of tyPtr, tyRef, tyVar, tyLent:
     if v.kind in {nkNilLit, nkPtrLit}:
@@ -128,8 +144,25 @@ proc packSize(conf: ConfigRef, v: PNode, typ: PType): int =
     # we use the real length here instead
     if v.kind in {nkNilLit, nkPtrLit}:
       result = sizeof(pointer)
-    elif v.len != 0:
-      result = v.len * packSize(conf, v[0], typ[1])
+    elif typ.sons.len != 0:
+      echo v.kind
+      let trange = typ.sons[0].n
+      let ttypenode = typ.sons[1]
+      let anode = trange.sons[1]
+      echo anode.intVal
+      echo "adfadf"
+      echo typ.kind
+      result += (anode.intVal.int + 1) * packSize(conf, ttypenode.n, ttypenode)
+      # for ts in trange.sons:
+      #   result += ts.intVal * packSize(conf, typ.sons[1], typ.sons[1].typ)
+      # for ts in typ.sons:
+      #   echo ts.kind
+      #   echo ts.n.kind
+    elif v.sons.len != 0:
+      result = v.sons.len * packSize(conf, v[0], typ[1])
+  of tyObject:
+    for son in typ.n.sons:
+      result += packSize(conf, son, son.typ)
   else:
     result = getSize(conf, typ).int
 

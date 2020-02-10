@@ -47,5 +47,5 @@ build_nim_csources(){
 # Note: if fails, may need to `cd csources && git pull`
 echo_run bin/nim c --skipUserCfg --skipParentCfg koch
 
-echo_run ./koch boot -d:release
+echo_run ./koch boot -d:release -d:nimHasLibFFI
 echo_run ./koch tools # Compile Nimble and other tools.
