@@ -50,8 +50,16 @@ template rawGetKnownHCImpl() {.dirty.} =
 proc rawGetKnownHC[X, A](t: X, key: A, hc: Hash): int {.inline.} =
   rawGetKnownHCImpl()
 
+template bits(n): uint32 =
+  var temp = n
+  var bits = 0.uint32
+  while temp != 0:
+    temp = temp shr 1
+    bits += 1
+  bits
+
 template genHashImpl(key, hc: typed) =
-  hc = hash(key)
+  hc = hash(key, targetBits=bits(maxHash(t)))
   if hc == 0: # This almost never taken branch should be very predictable.
     hc = 314159265 # Value doesn't matter; Any non-zero favorite is fine.
 

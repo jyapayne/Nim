@@ -113,31 +113,65 @@ proc hash*[T: proc](x: T): Hash {.inline.} =
     result = hash(pointer(x))
 
 const
-  prime = uint(11)
+  defaultSeedA = (17316035218449499591'u64).uint
+  defaultSeedB = (1734880652122947187'u64).uint
 
-proc hash*(x: int): Hash {.inline.} =
+template computeIntegerHash(x, numBits, seedA, seedB): Hash =
+  cast[Hash]((seedA*cast[uint](x) + seedB) shr (sizeof(x)*8 - targetBits*8))
+
+proc hash*(
+  x: int,
+  targetBits = sizeof(uint).uint32,
+  seedA = defaultSeedA,
+  seedB = defaultSeedB
+): Hash {.inline.} =
   ## Efficient hashing of integers.
-  result = cast[Hash](cast[uint](x) * prime)
+  result = computeIntegerHash(x, targetBits, seedA, seedB)
 
-proc hash*(x: int64): Hash {.inline.} =
+proc hash*(
+  x: int64,
+  targetBits = sizeof(uint).uint32,
+  seedA = defaultSeedA,
+  seedB = defaultSeedB
+): Hash {.inline.} =
   ## Efficient hashing of `int64` integers.
-  result = cast[Hash](cast[uint](x) * prime)
+  result = computeIntegerHash(x, targetBits, seedA, seedB)
 
-proc hash*(x: uint): Hash {.inline.} =
+proc hash*(
+  x: uint,
+  targetBits = sizeof(uint).uint32,
+  seedA = defaultSeedA,
+  seedB = defaultSeedB
+): Hash {.inline.} =
   ## Efficient hashing of unsigned integers.
-  result = cast[Hash](x * prime)
+  result = computeIntegerHash(x, targetBits, seedA, seedB)
 
-proc hash*(x: uint64): Hash {.inline.} =
+proc hash*(
+  x: uint64,
+  targetBits = sizeof(uint).uint32,
+  seedA = defaultSeedA,
+  seedB = defaultSeedB
+): Hash {.inline.} =
   ## Efficient hashing of `uint64` integers.
-  result = cast[Hash](cast[uint](x) * prime)
+  result = computeIntegerHash(x, targetBits, seedA, seedB)
 
-proc hash*(x: char): Hash {.inline.} =
+proc hash*(
+  x: char,
+  targetBits = sizeof(uint).uint32,
+  seedA = defaultSeedA,
+  seedB = defaultSeedB
+): Hash {.inline.} =
   ## Efficient hashing of characters.
-  result = cast[Hash](cast[uint](ord(x)) * prime)
+  result = computeIntegerHash(ord(x), targetBits, seedA, seedB)
 
-proc hash*[T: Ordinal](x: T): Hash {.inline.} =
+proc hash*[T: Ordinal](
+  x: T,
+  targetBits = sizeof(uint).uint32,
+  seedA = defaultSeedA,
+  seedB = defaultSeedB
+): Hash {.inline.} =
   ## Efficient hashing of other ordinal types (e.g. enums).
-  result = cast[Hash](cast[uint](ord(x)) * prime)
+  result = computeIntegerHash(x, targetBits, seedA, seedB)
 
 proc hash*(x: float): Hash {.inline.} =
   ## Efficient hashing of floats.
