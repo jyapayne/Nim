@@ -196,8 +196,8 @@ proc computeUnionObjectOffsetsFoldFunction(conf: ConfigRef; n: PNode; accum: var
 proc computeSizeAlign(conf: ConfigRef; typ: PType) =
   ## computes and sets ``size`` and ``align`` members of ``typ``
   assert typ != nil
-  echo "In size align!!"
-  echo typ.kind
+  # echo "In size align!!"
+  # echo typ.kind
   let hasSize = typ.size != szUncomputedSize
   let hasAlign = typ.align != szUncomputedSize
 

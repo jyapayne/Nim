@@ -592,7 +592,17 @@ proc rawExecute(c: PCtx, start: int, tos: PStackFrame): TFullReg =
       of 1: # PtrLikeKinds
         case regs[rb].kind
         of rkNode:
-          regs[ra].intVal = cast[int](regs[rb].node.intVal)
+          case regs[rb].node.kind
+          of nkCharLit..nkUInt64Lit:
+            regs[ra].intVal = regs[rb].node.intVal
+          of nkFloatLit..nkFloat128Lit:
+            regs[ra].intVal = int64(regs[rb].floatVal)
+          else:
+            # echo regs[rb].node.kind
+            # echo regs[rb].node.typ.kind
+            # for son in regs[rb].node.sons:
+            #   echo son.kind
+            regs[ra].intVal = cast[int](regs[rb].node.addr)
         of rkNodeAddr:
           regs[ra].intVal = cast[int](regs[rb].nodeAddr)
         else:
@@ -609,8 +619,8 @@ proc rawExecute(c: PCtx, start: int, tos: PStackFrame): TFullReg =
       of rkNode:
         if regs[rb].node.typ.kind notin PtrLikeKinds:
           stackTrace(c, tos, pc, "opcCastIntToPtr: regs[rb].node.typ: " & $regs[rb].node.typ.kind)
-        echo node2.kind
-        echo regs[rb].node.kind
+        # echo node2.kind
+        # echo regs[rb].node.kind
         node2.intVal = regs[rb].node.intVal
       else: stackTrace(c, tos, pc, "opcCastIntToPtr: regs[rb].kind: " & $regs[rb].kind)
       regs[ra].node = node2

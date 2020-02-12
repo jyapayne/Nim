@@ -130,7 +130,6 @@ template `+!`(x, y: untyped): untyped =
 
 proc packSize(conf: ConfigRef, v: PNode, typ: PType): int =
   ## computes the size of the blob
-  echo typ.kind
   case typ.kind
   of tyPtr, tyRef, tyVar, tyLent:
     if v.kind in {nkNilLit, nkPtrLit}:
@@ -145,13 +144,9 @@ proc packSize(conf: ConfigRef, v: PNode, typ: PType): int =
     if v.kind in {nkNilLit, nkPtrLit}:
       result = sizeof(pointer)
     elif typ.sons.len != 0:
-      echo v.kind
       let trange = typ.sons[0].n
       let ttypenode = typ.sons[1]
       let anode = trange.sons[1]
-      echo anode.intVal
-      echo "adfadf"
-      echo typ.kind
       result += (anode.intVal.int + 1) * packSize(conf, ttypenode.n, ttypenode)
       # for ts in trange.sons:
       #   result += ts.intVal * packSize(conf, typ.sons[1], typ.sons[1].typ)
