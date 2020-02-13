@@ -52,7 +52,7 @@ proc rawGetKnownHC[X, A](t: X, key: A, hc: Hash): int {.inline.} =
   rawGetKnownHCImpl()
 
 template genHashImpl(key, hc: typed) =
-  hc = hash(key, targetBits=lastSetBit(maxHash(t)))
+  hc = hash(key, targetBits=lastSetBit(maxHash(t).uint))
   if hc == 0: # This almost never taken branch should be very predictable.
     hc = 314159265 # Value doesn't matter; Any non-zero favorite is fine.
 

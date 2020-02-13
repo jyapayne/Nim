@@ -1,4 +1,4 @@
-import sets, hashes, algorithm
+import sets, hashes, algorithm, bitops
 
 
 block setEquality:
@@ -120,3 +120,13 @@ block hashForOrderdSet:
   reversed = !$reversed
   doAssert hash(r) == reversed
   doAssert hash(s1) != reversed
+
+block hashDoesntHaveLowerBitsCleared:
+  let num32 = 0xFFFF.uint32
+  let bits = num32.lastBitSet
+
+  let h1 = hash(0xFFFFFFFF00000000'u64, targetBits=bits)
+  let h2 = hash(0x2345123400000000'u64, targetBits=bits)
+
+
+  doAssert (h1 and num32) != (h2 and num32)

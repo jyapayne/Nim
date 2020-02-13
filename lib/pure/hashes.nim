@@ -117,11 +117,11 @@ const
   defaultSeedB = (1734880652122947187'u64).uint
 
 template computeIntegerHash(x, numBits, seedA, seedB): Hash =
-  cast[Hash]((seedA*cast[uint](x) + seedB) shr (sizeof(x)*8 - targetBits*8))
+  cast[Hash]((seedA*cast[uint](x) + seedB) shr (sizeof(x)*8 - numBits*8))
 
 proc hash*(
   x: int,
-  targetBits = sizeof(uint).uint32,
+  targetBits: SomeUnsignedInt = sizeof(uint),
   seedA = defaultSeedA,
   seedB = defaultSeedB
 ): Hash {.inline.} =
@@ -130,7 +130,7 @@ proc hash*(
 
 proc hash*(
   x: int64,
-  targetBits = sizeof(uint).uint32,
+  targetBits: SomeUnsignedInt = sizeof(uint),
   seedA = defaultSeedA,
   seedB = defaultSeedB
 ): Hash {.inline.} =
@@ -139,7 +139,7 @@ proc hash*(
 
 proc hash*(
   x: uint,
-  targetBits = sizeof(uint).uint32,
+  targetBits: SomeUnsignedInt = sizeof(uint),
   seedA = defaultSeedA,
   seedB = defaultSeedB
 ): Hash {.inline.} =
@@ -148,7 +148,7 @@ proc hash*(
 
 proc hash*(
   x: uint64,
-  targetBits = sizeof(uint).uint32,
+  targetBits: SomeUnsignedInt = sizeof(uint),
   seedA = defaultSeedA,
   seedB = defaultSeedB
 ): Hash {.inline.} =
@@ -157,7 +157,7 @@ proc hash*(
 
 proc hash*(
   x: char,
-  targetBits = sizeof(uint).uint32,
+  targetBits: SomeUnsignedInt = sizeof(uint),
   seedA = defaultSeedA,
   seedB = defaultSeedB
 ): Hash {.inline.} =
@@ -166,7 +166,7 @@ proc hash*(
 
 proc hash*[T: Ordinal](
   x: T,
-  targetBits = sizeof(uint).uint32,
+  targetBits: SomeUnsignedInt = sizeof(uint),
   seedA = defaultSeedA,
   seedB = defaultSeedB
 ): Hash {.inline.} =
