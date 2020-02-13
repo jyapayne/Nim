@@ -355,6 +355,15 @@ proc firstSetBit*(x: SomeInteger): int {.inline, noSideEffect.} =
       when sizeof(x) <= 4: result = firstSetBitNim(x.uint32)
       else: result = firstSetBitNim(x.uint64)
 
+proc lastSetBit*(x: SomeUnsignedInt): uint {.inline, noSideEffect.} =
+  ## Returns the 1-based index of the most significant set bit of x.
+  ## If x == 0, the result will also be 0
+  var temp = x
+  result = 0
+  while temp != 0:
+    temp = temp shr 1
+    result += 1
+
 proc fastLog2*(x: SomeInteger): int {.inline, noSideEffect.} =
   ## Quickly find the log base 2 of an integer.
   ## If `x` is zero, when ``noUndefinedBitOpts`` is set, result is -1,
